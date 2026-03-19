@@ -1,1 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Vic ❤️ Yuki</title>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+
+<style>
+body {
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#ffd6e8,#d6e6ff);
+}
+
+/* HEADER */
+header {
+  background:linear-gradient(90deg,#ff4d88,#ff85a2);
+  color:white;
+  padding:15px;
+  text-align:center;
+  box-shadow:0 2px 10px rgba(0,0,0,0.2);
+}
+
+/* MENU */
+.menu {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  padding:10px;
+}
+
+button {
+  padding:10px 15px;
+  border:none;
+  border-radius:20px;
+  background:#ff4d88;
+  color:white;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+button:hover {
+  transform:scale(1.05);
+  background:#ff2e73;
+}
+
+/* PAGE */
+.page {display:none;padding:20px;}
+.active {display:block;}
+
+/* CARD */
+.card {
+  background:white;
+  padding:15px;
+  margin:15px auto;
+  max-width:500px;
+  border-radius:20px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* INPUT */
+input, textarea {
+  width:90%;
+  padding:10px;
+  margin:5px;
+  border-radius:15px;
+  border:1px solid #ccc;
+  outline:none;
+}
+
+/* CHAT */
+.msg {
+  background:#ffe6f0;
+  padding:10px;
+  border-radius:15px;
+  margin:5px;
+  max-width:70%;
+}
+
+.msg-container {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+/* CARTAS */
+.carta {
+  background:#fff0f5;
+  border-left:5px solid #ff4d88;
+}
+
+/* DIARIO */
+.diario {
+  background:#f9f9ff;
+  border-left:5px solid #6a5acd;
+}
+
+/* LOGIN */
+#login {
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:white;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+</style>
+</head>
+
+<body>
+
+<div id="login">
+  <h2>Senha ❤️</h2>
+  <input type="password" id="senha">
+  <button onclick="entrar()">Entrar</button>
+</div>
+
+<header>
+<h1>Vic ❤️ Yuki</h1>
+</header>
+
+<div class="menu">
+<button onclick="showPage('home')">🏠</button>
+<button onclick="showPage('tempo')">⏳</button>
+<button onclick="showPage('recados')">💌</button>
+<button onclick="showPage('diario')">📖</button>
+<button onclick="showPage('quiz')">🧠</button>
+<button onclick="showPage('chat')">💬</button>
+<button onclick="showPage('audio')">🎤</button>
+<button onclick="showPage('fotos')">📸</button>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page active">
+<div class="card">
+<h2>Nosso cantinho 💕</h2>
+<button onclick="mandarAmor()">❤️ Eu te amo</button>
+</div>
+</div>
+
+<!-- TEMPO -->
+<div id="tempo" class="page">
+<div class="card"><p id="contador"></p></div>
+</div>
+
+<!-- CARTAS -->
+<div id="recados" class="page">
+<div class="card">
+<textarea id="textoRecado"></textarea>
+<button onclick="novoRecado()">Enviar</button>
+</div>
+<div id="listaRecados"></div>
+</div>
+
+<!-- DIARIO -->
+<div id="diario" class="page">
+<div class="card">
+<textarea id="textoDiario"></textarea>
+<button onclick="salvarDiario()">Salvar</button>
+</div>
+<div id="listaDiario"></div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="page">
+<div class="card">
+<input id="pergunta" placeholder="Pergunta">
+<input id="resposta" placeholder="Resposta">
+<button onclick="novaPergunta()">Adicionar</button>
+</div>
+<div id="listaQuiz"></div>
+</div>
+
+<!-- CHAT -->
+<div id="chat" class="page">
+<div class="card">
+<input id="msg">
+<button onclick="enviarMsg()">Enviar</button>
+</div>
+<div id="msgs" class="msg-container"></div>
+</div>
+
+<!-- AUDIO -->
+<div id="audio" class="page">
+<div class="card">
+<button onclick="gravar()">Gravar áudio</button>
+</div>
+<div id="audios"></div>
+</div>
+
+<!-- FOTOS -->
+<div id="fotos" class="page">
+<div class="card">
+<input id="fotoUrl">
+<button onclick="addFoto()">Adicionar</button>
+</div>
+<div id="galeria"></div>
+</div>
+
+<script>
+const firebaseConfig={
+apiKey:"SUA_API_KEY",
+authDomain:"SEU_DOMINIO",
+databaseURL:"SUA_DATABASE_URL",
+projectId:"SEU_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+
+/* LOGIN */
+function entrar(){
+if(senha.value==="20102512") login.style.display="none";
+else alert("Senha errada");
+}
+
+/* NAV */
+function showPage(id){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+/* TEMPO */
+const inicio=new Date("2024-01-01");
+setInterval(()=>{
+contador.innerText=Math.floor((new Date()-inicio)/(1000*60*60*24))+" dias 💕";
+},1000);
+
+/* AMOR */
+function mandarAmor(){db.ref("amor").set("❤️ Eu te amo!");}
+db.ref("amor").on("value",s=>{if(s.exists())alert(s.val());});
+
+/* CARTAS */
+function novoRecado(){
+if(textoRecado.value){
+db.ref("recados").push(textoRecado.value);
+textoRecado.value="";
+}
+}
+db.ref("recados").on("value",s=>{
+listaRecados.innerHTML="";
+s.forEach(c=>{
+listaRecados.innerHTML+=`<div class="card carta">${c.val()}</div>`;
+});
+});
+
+/* DIARIO */
+function salvarDiario(){
+if(textoDiario.value){
+db.ref("diario").push(textoDiario.value);
+textoDiario.value="";
+}
+}
+db.ref("diario").on("value",s=>{
+listaDiario.innerHTML="";
+s.forEach(c=>{
+listaDiario.innerHTML+=`<div class="card diario">${c.val()}</div>`;
+});
+});
+
+/* QUIZ */
+function novaPergunta(){
+if(pergunta.value && resposta.value){
+db.ref("quiz").push({p:pergunta.value,r:resposta.value});
+pergunta.value="";resposta.value="";
+}
+}
+db.ref("quiz").on("value",s=>{
+listaQuiz.innerHTML="";
+s.forEach(c=>{
+let q=c.val();
+listaQuiz.innerHTML+=`
+<div class="card">
+<p>${q.p}</p>
+<button onclick="responder('${q.r}')">Responder</button>
+</div>`;
+});
+});
+function responder(r){
+let u=prompt("Resposta:");
+if(u==r) alert("Acertou ❤️");
+else alert("Resposta: "+r);
+}
+
+/* CHAT */
+function enviarMsg(){
+if(msg.value){
+db.ref("chat").push(msg.value);
+msg.value="";
+}
+}
+db.ref("chat").on("value",s=>{
+msgs.innerHTML="";
+s.forEach(c=>{
+msgs.innerHTML+=`<div class="msg">${c.val()}</div>`;
+});
+});
+
+/* AUDIO */
+let mediaRecorder;
+async function gravar(){
+let stream=await navigator.mediaDevices.getUserMedia({audio:true});
+mediaRecorder=new MediaRecorder(stream);
+let chunks=[];
+mediaRecorder.ondataavailable=e=>chunks.push(e.data);
+mediaRecorder.onstop=()=>{
+let blob=new Blob(chunks);
+let url=URL.createObjectURL(blob);
+db.ref("audios").push(url);
+};
+mediaRecorder.start();
+setTimeout(()=>mediaRecorder.stop(),3000);
+}
+db.ref("audios").on("value",s=>{
+audios.innerHTML="";
+s.forEach(c=>audios.innerHTML+=`<audio controls src="${c.val()}"></audio>`);
+});
+
+/* FOTOS */
+function addFoto(){
+if(fotoUrl.value){
+db.ref("fotos").push(fotoUrl.value);
+fotoUrl.value="";
+}
+}
+db.ref("fotos").on("value",s=>{
+galeria.innerHTML="";
+s.forEach(c=>galeria.innerHTML+=`<img src="${c.val()}">`);
+});
+</script>
+
+</body>
+  </html>
